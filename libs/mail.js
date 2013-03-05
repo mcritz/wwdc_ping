@@ -1,5 +1,5 @@
 var sendMessage = function(str) {
-	console.log(str + '\nMatched!');
+	console.log(str);
 }
 
 module.exports.sendMessage = sendMessage;
