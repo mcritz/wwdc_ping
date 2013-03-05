@@ -1,20 +1,17 @@
 var https = require('https'); // WWDC site is https. Besides… http://www.codinghorror.com/blog/2012/02/should-all-web-traffic-be-encrypted.html
-var urlToPing = 'https://developer.apple.com/WWDC/'; // WWDC site
+var urlToPing = 'fail!'; // 'https://developer.apple.com/WWDC/'; // WWDC site
 var searchRegExp = new RegExp('wwdc2012-june-11-15.jpg'); // old WWDC image
-var interval = 30 * 1000; // milliseconds
+var interval = 1000; // milliseconds
 
-notifyOnMatch = function(str){
-	// XXTODOXX: set up email feature.
-	console.log(str);
-	console.log('Matched!');
+var mail 	= require('./libs/mail');
+var error 	= require('./libs/error');
+
+var notifyOnMatch = function(str){
+	var sendMessage = new mail.sendMessage();
+	sendMessage(str);
 }
 
-notifyOnFail = function(e){
-	// XXTODOXX: more robust error handling
-	console.log('Got error: ' + e.message);
-}
-
-getUrl = function(){
+var getUrl = function(){
 	// fetch
 	https.get(urlToPing, function(res) {
 		var output = '';
@@ -32,7 +29,7 @@ getUrl = function(){
 			}
 		});
 	}).on('error', function(e) {
-		notifyOnFail(e);
+		var notifyOnFail = new error.notifyOnFail(e);
 	});
 }
 
