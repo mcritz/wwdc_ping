@@ -42,5 +42,5 @@ var getUrl = function(){
 
 // run on launch…
 getUrl();
-// then repeat at interval
+// …then repeat at interval
 setInterval(getUrl, interval);
