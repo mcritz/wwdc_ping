@@ -1,14 +1,15 @@
 var https = require('https'); // WWDC site is https. Besides… http://www.codinghorror.com/blog/2012/02/should-all-web-traffic-be-encrypted.html
-var urlToPing = 'fail!'; // 'https://developer.apple.com/WWDC/'; // WWDC site
-var searchRegExp = new RegExp('wwdc2012-june-11-15.jpg'); // old WWDC image
+var urlToPing = 'https://developer.apple.com/WWDC/'; // WWDC site
+var searchRegExp = new RegExp('wwdc2013-june-11-15.jpg'); // old WWDC image
 var interval = 1000; // milliseconds
+var messageSent = false; // Assuming we're always running, send message just once.
 
 var mail 	= require('./libs/mail');
 var error 	= require('./libs/error');
 
 var notifyOnMatch = function(str){
-	var sendMessage = new mail.sendMessage();
-	sendMessage(str);
+	var messageText = 'WWDC ticket sales are LIVE!';
+	var sendMessage = new mail.sendMessage(messageText);
 }
 
 var getUrl = function(){
@@ -24,8 +25,10 @@ var getUrl = function(){
 
 		res.on('end', function(){
 			// Check if site contains the old stuff
-			if (!searchRegExp.exec(output)) {
+			if (!searchRegExp.exec(output) && !messageSent) {
 				notifyOnMatch(output);
+				messageSent = true;
+				throw('All done!'); // XXTODOXX: graceful process termination.
 			}
 		});
 	}).on('error', function(e) {
