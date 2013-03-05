@@ -1,0 +1,11 @@
+{
+  "name": "wwdc-ping",
+  "version": "0.0.1",
+  "dependencies": {
+    "nodemailer": "0.3.43"
+  },
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.2.x"
+  }
+}
