@@ -4,6 +4,27 @@ Get email when WWDC site has been updated
 
 Requires Node.js and nodemailer.
 
+## How-To
+
+* Create a credentials.js file in the root of the project as:
+
+```javascript
+var	user = 'yourmail@gmail.com';
+var	pass = 'fancy password';
+var sender = 'reply-to@yourmail.com';
+var recipients = 'mail1@mail.com'; // comma-seperated list of recpienets
+
+module.exports.user = user
+module.exports.pass = pass;
+module.exports.sender = sender;
+module.exports.recipients = recipients;
+```
+
+* Deploy in your favorite node.js environment
+
+## Support
+I will support this code as long as it interests me. Try [@mcritz on App.net](https://alpha.app.net/mcritz) or [@mike_critz on twitter](https://twitter.com/mike_critz)
+
 ### License
 
 Copyright 2013 Michael Critz
