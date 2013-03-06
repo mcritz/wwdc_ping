@@ -33,7 +33,7 @@ var notifyOnMatch = function(str){
 		if(error){
 			console.log('Mail error: ');
 			console.log(error);
-			
+
 			// reset polling
 			messageSent = false;
 			pollUrl();
@@ -84,21 +84,25 @@ var getUrl = function(){
 	});
 }
 
-var pollUrl = function(){
-	timerID = setInterval(function(){
+var pollUrl = function(timerToset){
+	timerToset = setInterval(function(){
 		getUrl()
 	}, interval);
 }
 
-var stopPolling = function(){
-	clearInterval(timerID);
+var stopPolling = function(timerToUnset){
+	clearInterval(timerToUnset);
 }
 
 var init = function(){
 	// check first…
-	getUrl();
+	getUrl(timerID);
 	// …then repeat with interval
-	pollUrl();
+	pollUrl(timerID);
+
+	// start a web server
+	var web = require('./libs/web');
+	web.server();
 }
 
 init();
