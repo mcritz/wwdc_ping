@@ -1,10 +1,16 @@
 var notifyOnFail = function(e){
 	// XXTODOXX: more robust error handling
-	if (e){
-		console.log('Got error: ' + e.message);
-	} else {
-		console.log('The worst thing happened.');
-		return('epicFail');
+	if (!e.message){
+		console.log('EPIC FAIL!');
+		return;
+	}
+	switch (e.message) {
+		case 'getaddrinfo ENOTFOUND' :
+			console.log(e.message + '\n\n I can’t find the url.');
+		default :
+			console.log('The worst thing happened:');
+			console.log(e.message);
+			return('typical fail');
 	}
 }
 
