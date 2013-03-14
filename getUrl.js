@@ -1,7 +1,13 @@
 var https = require('https'); // WWDC site is https. Besides… http://www.codinghorror.com/blog/2012/02/should-all-web-traffic-be-encrypted.html
 var urlToPing = 'https://developer.apple.com/WWDC/'; // WWDC site
+var get_options = {
+	host: urlToPing
+ 	, headers: {
+		'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/536.26.17 (KHTML, like Gecko) Version/6.0.2 Safari/536.26.17'
+	}
+}
 var searchRegExp = new RegExp('wwdc2012-june-11-15.jpg'); // old WWDC image
-var interval = 1500; // * 30 milliseconds. WARNING!! DO NOT BE A JACKASS. KEEP SANE LIMITS!
+var interval = 77 * 1000; // * 30 milliseconds. WARNING!! DO NOT BE A JACKASS. KEEP SANE LIMITS!
 var timerID;
 var messageSent = false; // Assuming we're always running, send message just once.
 var messageSubject = 'Time to check out WWDC 2013!';
