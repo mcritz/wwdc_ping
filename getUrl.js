@@ -1,4 +1,4 @@
-var https = require('https'); // WWDC site is https. Besides… http://www.codinghorror.com/blog/2012/02/should-all-web-traffic-be-encrypted.html
+var https = require('https'); // WWDC site is https. Besides… http://www.codinghorror.com/blog/2013/02/should-all-web-traffic-be-encrypted.html
 var urlToPing = 'https://developer.apple.com/WWDC/'; // WWDC site
 var get_options = {
 	host: urlToPing
@@ -12,16 +12,16 @@ var timerID;
 var messageSent = false; // Assuming we're always running, send message just once.
 var messageSubject = 'Time to check out WWDC 2013!';
 var messageText = urlToPing + '\n\n\nThere has been a change detected to Apple WWDC site.';
+var mailCredentials	= require('./credentials');
+var adminEmail = 'mcritz@mac.com';
 
 var error 	= require('./libs/error');
 
 // XXTODOXX: single responsibility getUrl. Need to move this into a new require.
-var notifyOnMatch = function(str){
-	console.log('change detected!');
+var sendUserMail = function(htmlOutput,destination,message){
 	stopPolling();
 
 	var nodemailer 		= require('./node_modules/nodemailer');
-	var mailCredentials	= require('./credentials');
 
 	var smtpTransport = nodemailer.createTransport("SMTP",{
 	   service: "Gmail",
@@ -32,9 +32,9 @@ var notifyOnMatch = function(str){
 	});
 	smtpTransport.sendMail({
 		from: mailCredentials.sender,
-		to: mailCredentials.recipients,
+		to: destination,
 		subject: messageSubject,
-		text: messageText // plaintext
+		text: message // plaintext
 	}, function(error, response){
 		if(error){
 			console.log('Mail error: ');
@@ -59,8 +59,13 @@ var getUrl = function(){
 	https.get(urlToPing, function(res) {
 		var output = '';
 
-		// console.log('Got response: ' + res.statusCode);
 		switch (res.responseCode) {
+			case '301' :
+				console.log('301: Redirect!');
+				sendUserMail(output,adminEmail,'Error 301 detected!');
+				// console.log(res);
+				console.log(output);
+				completeMission();
 			case '401' :
 				console.log('401: UNAUTHORIZED!'); // XXTODOXX: notify admin
 			case '403' :
@@ -78,9 +83,10 @@ var getUrl = function(){
 		});
 
 		res.on('end', function(){
-			// Check if site contains the old stuff
 			if (!searchRegExp.exec(output) && !messageSent) {
-				notifyOnMatch(output);
+				// Site changed. Send message!
+				console.log('change detected!' + Date+now());
+				sendUserMail(output,mailCredentials.recipients,messageText);
 				messageSent = true;
 				output = '';
 			}
