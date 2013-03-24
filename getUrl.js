@@ -11,14 +11,14 @@ var interval = 77 * 1000; // * 30 milliseconds. WARNING!! DO NOT BE A JACKASS. K
 var timerID;
 var messageSent = false; // Assuming we're always running, send message just once.
 var messageSubject = 'Time to check out WWDC 2013!';
+var adminSubject = 'Problem with WWDC ping'
 var messageText = urlToPing + '\n\n\nThere has been a change detected to Apple WWDC site.';
 var mailCredentials	= require('./credentials');
-var adminEmail = 'mcritz@mac.com';
 
 var error 	= require('./libs/error');
 
 // XXTODOXX: single responsibility getUrl. Need to move this into a new require.
-var sendUserMail = function(htmlOutput,destination,message){
+var sendUserMail = function(htmlOutput,destination,mailSubject,message){
 	stopPolling();
 
 	var nodemailer 		= require('./node_modules/nodemailer');
@@ -33,7 +33,7 @@ var sendUserMail = function(htmlOutput,destination,message){
 	smtpTransport.sendMail({
 		from: mailCredentials.sender,
 		to: destination,
-		subject: messageSubject,
+		subject: mailSubject,
 		text: message // plaintext
 	}, function(error, response){
 		if(error){
@@ -45,37 +45,51 @@ var sendUserMail = function(htmlOutput,destination,message){
 			pollUrl();
 		} else {
 			console.log("Message sent: " + response.message);
-			completeMission();
+			completeMission(destination);
 	   	}
 	});
 }
 
-var completeMission = function(){
-	throw('All done!'); // XXTODOXX: graceful process termination?
-}
+var completeMission = function(user){
+	if (user != 'mcritz@mac.com'){
+		throw('All done!'); // XXTODOXX: graceful process termination?
+	}
+} 
 
 var getUrl = function(){
 	// fetch
 	https.get(urlToPing, function(res) {
 		var output = '';
-
-		switch (res.responseCode) {
+		
+		var d = new Date();
+		var logTime = d + ' :: ';
+		var responsecode = res.statusCode.toString();
+		switch (responsecode) {
 			case '301' :
-				console.log('301: Redirect!');
-				sendUserMail(output,adminEmail,'Error 301 detected!');
-				// console.log(res);
-				console.log(output);
-				completeMission();
+				var message = logTime + '301: Redirect!';
+				console.log(message);
+				sendUserMail(output,mailCredentials.admin,adminSubject,message);
+				break;
 			case '401' :
-				console.log('401: UNAUTHORIZED!'); // XXTODOXX: notify admin
+				var message = logTime + '401: UNAUTHORIZED!';
+				console.log(message);
+				sendUserMail(output,mailCredentials.admin,adminSubject,message);
+				break;
 			case '403' :
-				console.log('403: FORBIDDEN!'); // XXTODOXX: notify admin
+				var message = logTime + '403: FORBIDDEN!';
+				console.log(message);
+				sendUserMail(output,mailCredentials.admin,adminSubject,message);
+				break;
 			case '404' :
-				console.log('404: Url not found!'); // XXTODOXX: notify admin
+				var message = logTime + 'Hello. I think Apple’s WWDC site is currently down. Just felt like sharing.';
+				sendUserMail(output,mailCredentials.recipients,'WWDC site offline',message);
+				break;
 			case '408' :
-				console.log('408: Request Timeout!'); // XXTODOXX: notify everyone
+				var message = logTime + 'Hello. I think Apple’s WWDC site is currently offline. Just felt like sharing.';
+				sendUserMail(output,mailCredentials.recipients,'WWDC site offline',message);
+				break;
 			default :
-				console.log('Got response: ' + res.statusCode);
+				console.log(logTime + 'Got response: ' + res.statusCode);
 		}
 
 		res.on('data', function (chunk) {
@@ -86,7 +100,7 @@ var getUrl = function(){
 			if (!searchRegExp.exec(output) && !messageSent) {
 				// Site changed. Send message!
 				console.log('change detected!' + Date+now());
-				sendUserMail(output,mailCredentials.recipients,messageText);
+				sendUserMail(output,mailCredentials.recipients,messageSubject,messageText);
 				messageSent = true;
 				output = '';
 			}

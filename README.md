@@ -6,7 +6,7 @@ Requires Node.js and nodemailer.
 
 ## How-To
 
-* Create a credentials.js file in the root of the project as:
+* Modify the credentials.s file in the root of the project as:
 
 ```javascript
 var	user = 'yourmail@gmail.com';
