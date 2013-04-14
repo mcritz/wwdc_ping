@@ -14,8 +14,9 @@ var messageSubject = 'Time to check out WWDC 2013!';
 var adminSubject = 'Problem with WWDC ping'
 var messageText = urlToPing + '\n\n\nThere has been a change detected to Apple WWDC site.';
 var mailCredentials	= require('./credentials');
+var manyFails = 0;
 
-var error 	= require('./libs/error');
+var error = require('./libs/error');
 
 // XXTODOXX: single responsibility getUrl. Need to move this into a new require.
 var sendUserMail = function(htmlOutput,destination,mailSubject,message){
@@ -50,14 +51,25 @@ var sendUserMail = function(htmlOutput,destination,mailSubject,message){
 	});
 }
 
+/*
+ * completeMission if
+ * user isn't admin
+ * OR
+ * if the app is failing badly
+ * @prop user = destination email address
+ * @var manyFails = a counter to determine how many times run
+ */
+
 var completeMission = function(user){
-	if (user != 'mcritz@mac.com'){
+	if (user != mailCredentials.admin || manyFails > 5) {
 		throw('All done!'); // XXTODOXX: graceful process termination?
+	} else {
+		manyFails += 1;
 	}
 } 
 
 var getUrl = function(){
-	// fetch
+	// fetch our url
 	https.get(urlToPing, function(res) {
 		var output = '';
 		

@@ -7,6 +7,8 @@ var notifyOnFail = function(e){
 	switch (e.message) {
 		case 'getaddrinfo ENOTFOUND' :
 			console.log(e.message + '\n\n I can’t find the url.');
+		case 'connect ECONNREFUSED' :
+			console.log(e.message + '\n\n Really!?');
 		default :
 			console.log('The worst thing happened:');
 			console.log(e.message);
