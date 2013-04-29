@@ -13,7 +13,7 @@ var messageSent = false; // Assuming we're always running, send message just onc
 var messageSubject = 'Time to check out WWDC 2013!';
 var messageText = urlToPing + '\n\n\nThere has been a change detected to Apple WWDC site.';
 var mailCredentials	= require('./credentials');
-var adminEmail = 'mcritz@mac.com';
+var adminEmail = 'your@email.com';
 
 var error 	= require('./libs/error');
 
